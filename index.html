@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Surprise For You 🌹</title>
+    <style>
+        /* --- General Reset & Body --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: radial-gradient(circle at center, #1a0b12 0%, #000000 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            font-family: 'Georgia', serif;
+        }
+
+        /* --- The Hidden Checkbox (The Trigger) --- */
+        #click-me {
+            display: none;
+        }
+
+        /* --- The Container --- */
+        .container {
+            position: relative;
+            width: 300px;
+            height: 500px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+        }
+
+        /* --- The Message Card (Hidden Initially) --- */
+        .card {
+            position: absolute;
+            bottom: 50px; /* Start hidden behind the rose stem */
+            width: 260px;
+            height: 180px;
+            background: linear-gradient(135deg, #fff0f5, #ffe4e1);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transform: scale(0) translateY(100px);
+            opacity: 0;
+            transition: all 1s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            z-index: 1; /* Behind the rose petals initially */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card h2 {
+            color: #d21f3c;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            color: #555;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        /* --- The Rose Structure --- */
+        .rose-wrapper {
+            position: relative;
+            cursor: pointer;
+            z-index: 10;
+            filter: drop-shadow(0 0 20px rgba(220, 20, 60, 0.3));
+            transition: filter 0.5s ease;
+        }
+        
+        .rose-wrapper:hover {
+            filter: drop-shadow(0 0 30px rgba(220, 20, 60, 0.6));
+        }
+
+        /* The Rose Head */
+        .rose {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            background: #d21f3c;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 1s ease-in-out;
+        }
+
+        /* Petals (Using CSS Gradients & Border Radius) */
+        .petal {
+            position: absolute;
+            background: linear-gradient(to top, #9e0e24, #ff3355);
+            border-radius: 50% 50% 0 50%;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+            transition: all 1s ease-in-out;
+            transform-origin: bottom right;
+        }
+
+        /* Inner Petals (The Bud) */
+        .p1 { width: 50px; height: 50px; transform: rotate(45deg) translate(0, 0); z-index: 5; }
+        .p2 { width: 50px; height: 50px; transform: rotate(135deg) translate(0, 0); z-index: 5; }
+        .p3 { width: 50px; height: 50px; transform: rotate(225deg) translate(0, 0); z-index: 5; }
+        .p4 { width: 50px; height: 50px; transform: rotate(315deg) translate(0, 0); z-index: 5; }
+        
+        /* Outer Petals (Hidden/Tight initially) */
+        .p5 { width: 60px; height: 60px; transform: rotate(0deg) scale(0.8); z-index: 4; opacity: 0.9; }
+        .p6 { width: 60px; height: 60px; transform: rotate(90deg) scale(0.8); z-index: 4; opacity: 0.9; }
+        .p7 { width: 60px; height: 60px; transform: rotate(180deg) scale(0.8); z-index: 4; opacity: 0.9; }
+        .p8 { width: 60px; height: 60px; transform: rotate(270deg) scale(0.8); z-index: 4; opacity: 0.9; }
+
+        /* Stem & Leaves */
+        .stem {
+            position: absolute;
+            top: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 200px;
+            background: linear-gradient(to right, #004d00, #008000);
+            border-radius: 5px;
+            z-index: 0;
+        }
+
+        .leaf {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(to top right, #004d00, #32cd32);
+            border-radius: 0 50% 0 50%;
+            z-index: 1;
+            transition: all 1s ease;
+        }
+
+        .leaf-1 { top: 120px; left: -30px; transform: rotate(-30deg) scale(0.8); }
+        .leaf-2 { top: 150px; left: 0px; transform: rotate(190deg) scale(0.8); }
+
+        /* The Instruction Text */
+        .instruction {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            color: #fff;
+            font-size: 1.2rem;
+            animation: pulse 2s infinite;
+            pointer-events: none; /* Let clicks pass through */
+        }
+
+        /* --- THE ANIMATION LOGIC (When Checkbox is Checked) --- */
+        
+        /* 1. Hide Instruction */
+        #click-me:checked ~ .container .instruction {
+            opacity: 0;
+        }
+
+        /* 2. Bloom the Rose */
+        #click-me:checked ~ .container .rose-wrapper .p1 { transform: rotate(45deg) translate(10px, -10px); }
+        #click-me:checked ~ .container .rose-wrapper .p2 { transform: rotate(135deg) translate(10px, -10px); }
+        #click-me:checked ~ .container .rose-wrapper .p3 { transform: rotate(225deg) translate(10px, -10px); }
+        #click-me:checked ~ .container .rose-wrapper .p4 { transform: rotate(315deg) translate(10px, -10px); }
+        
+        #click-me:checked ~ .container .rose-wrapper .p5 { transform: rotate(0deg) translate(20px, -20px) scale(1.1); }
+        #click-me:checked ~ .container .rose-wrapper .p6 { transform: rotate(90deg) translate(20px, -20px) scale(1.1); }
+        #click-me:checked ~ .container .rose-wrapper .p7 { transform: rotate(180deg) translate(20px, -20px) scale(1.1); }
+        #click-me:checked ~ .container .rose-wrapper .p8 { transform: rotate(270deg) translate(20px, -20px) scale(1.1); }
+
+        /* 3. Reveal the Card */
+        #click-me:checked ~ .container .card {
+            opacity: 1;
+            transform: scale(1) translateY(-160px); /* Moves UP above the rose */
+            z-index: 15; /* Comes to front */
+        }
+        
+        /* 4. Leaves grow */
+        #click-me:checked ~ .container .leaf-1 { transform: rotate(-45deg) scale(1.2); }
+        #click-me:checked ~ .container .leaf-2 { transform: rotate(205deg) scale(1.2); }
+
+        /* --- Keyframes --- */
+        @keyframes pulse {
+            0% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); text-shadow: 0 0 10px #ff3355; }
+            100% { opacity: 0.6; transform: scale(1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Floating effect for the whole rose container after blooming */
+        #click-me:checked ~ .container .rose-wrapper {
+            animation: float 3s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+
+    <input type="checkbox" id="click-me">
+
+    <div class="container">
+        <div class="card">
+            <h2>Happy Rose Day Bubu! 🌹</h2>
+            <p>Just like this rose blooms, my love for you grows every single day.</p>
+            <p><b>You are my forever flower.</b></p>
+        </div>
+
+        <label for="click-me" class="rose-wrapper" title="Click me!">
+            <div class="rose">
+                <div class="petal p1"></div>
+                <div class="petal p2"></div>
+                <div class="petal p3"></div>
+                <div class="petal p4"></div>
+                <div class="petal p5"></div>
+                <div class="petal p6"></div>
+                <div class="petal p7"></div>
+                <div class="petal p8"></div>
+            </div>
+            
+            <div class="leaf leaf-1"></div>
+            <div class="leaf leaf-2"></div>
+            <div class="stem"></div>
+        </label>
+
+        <div class="instruction">Tap the Rose</div>
+    </div>
+
+</body>
+</html>
